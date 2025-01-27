@@ -15,7 +15,7 @@ st.markdown(
         </style>
         """, unsafe_allow_html=True
     )
-st.image('climate2.jpg', use_column_width=True)
+st.image('climate2.jpg', use_container_width=True)
 with open('random_regression_model.pkl', 'rb') as model1:
     rf_model = pickle.load(model1)
 with open('linear_regression_model.pkl', 'rb') as model2:

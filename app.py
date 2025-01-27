@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-
+from sklearn._loss import _loss
 st.set_page_config(page_title="Crop Yield Predictor",layout="wide",page_icon = 'climate1.png')
 st.markdown(
         r"""

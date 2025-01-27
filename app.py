@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
+import joblib
 
 st.set_page_config(page_title="Crop Yield Predictor",layout="wide",page_icon = 'climate1.png')
 st.markdown(
@@ -17,13 +17,13 @@ st.markdown(
     )
 st.image('climate2.jpg', use_container_width=True)
 with open('random_regression_model.pkl', 'rb') as model1:
-    rf_model = pickle.load(model1)
+    rf_model = joblib.load(model1)
 with open('linear_regression_model.pkl', 'rb') as model2:
-    linear_model = pickle.load(model2)
+    linear_model = joblib.load(model2)
 with open('svm_regression_model.pkl', 'rb') as model3:
-    svm_model = pickle.load(model3)
+    svm_model = joblib.load(model3)
 with open('gradient_regression_model.pkl', 'rb') as model4:
-    gradient_model = pickle.load(model4)
+    gradient_model = joblib.load(model4)
 # Function to predict crop yield based on user input
 AREA = ['Albania', 'Algeria', 'Angola', 'Argentina', 'Armenia',
        'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain',
@@ -105,10 +105,10 @@ st.title('Crop Yield Prediction')
 model_name = st.selectbox("Select Regression Model", ['Linear Regression','Random Forest Regression','Support Vector Regression','Gradient Boosting Regression'])
 area = st.selectbox('Select Area (Country):', AREA)
 item = st.selectbox('Select Crop:', ITEM)
-year = st.number_input('Enter Year:', min_value=1900, max_value=2025, value=2020)
+year = st.number_input('Enter Year:', min_value=1900, max_value=2050, value=2015)
 rain_fall = st.number_input('Average Rainfall (mm per year):', min_value=0, max_value=5000, value=800)
-pesticides = st.number_input('Pesticides (tonnes):', min_value=0, max_value=1000, value=100)
-avg_temp = st.number_input('Average Temperature (°C):', min_value=-50, max_value=50, value=25)
+pesticides = st.number_input('Pesticides (tonnes):', min_value=0, max_value=400000, value=0)
+avg_temp = st.number_input("Temprature (°C):", min_value=0.0, max_value=60.0, value=0.0, step=0.1)
 
 # Predict button
 if st.button('Predict Yield'):

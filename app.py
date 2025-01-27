@@ -22,8 +22,8 @@ with open('linear_regression_model.pkl', 'rb') as model2:
     linear_model = joblib.load(model2)
 with open('svm_regression_model.pkl', 'rb') as model3:
     svm_model = joblib.load(model3)
-with open('gradient_regression_model.pkl', 'rb') as model4:
-    gradient_model = joblib.load(model4)
+# with open('gradient_regression_model.pkl', 'rb') as model4:
+#     gradient_model = joblib.load(model4)
 # Function to predict crop yield based on user input
 AREA = ['Albania', 'Algeria', 'Angola', 'Argentina', 'Armenia',
        'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain',
@@ -93,8 +93,8 @@ def predict_yield_dynamic(area, item, year, avg_rainfall, pesticides, avg_temp, 
         prediction = rf_model.predict(df_input)
     elif model_name == "Support Vector Regression":
         prediction = svm_model.predict(df_input)
-    elif model_name == "Gradient Boosting Regression":
-        prediction = gradient_model.predict(df_input)
+    # elif model_name == "Gradient Boosting Regression":
+    #     prediction = gradient_model.predict(df_input)
     return prediction[0]
 
 
@@ -102,7 +102,8 @@ def predict_yield_dynamic(area, item, year, avg_rainfall, pesticides, avg_temp, 
 st.title('Crop Yield Prediction')
 
 # User input fields
-model_name = st.selectbox("Select Regression Model", ['Linear Regression','Random Forest Regression','Support Vector Regression','Gradient Boosting Regression'])
+# model_name = st.selectbox("Select Regression Model", ['Linear Regression','Random Forest Regression','Support Vector Regression','Gradient Boosting Regression'])
+model_name = st.selectbox("Select Regression Model", ['Linear Regression','Random Forest Regression','Support Vector Regression'])
 area = st.selectbox('Select Area (Country):', AREA)
 item = st.selectbox('Select Crop:', ITEM)
 year = st.number_input('Enter Year:', min_value=1900, max_value=2050, value=2015)

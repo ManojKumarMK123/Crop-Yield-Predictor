@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.model_selection import train_test_split
 
 st.set_page_config(page_title="Crop Yield Predictor",layout="wide",page_icon = 'climate1.png')
 st.markdown(
@@ -16,9 +18,20 @@ st.markdown(
         """, unsafe_allow_html=True
     )
 st.image('climate2.jpg', use_container_width=True)
-with open('gradient_regression_model.pkl', 'rb') as modell:
-    gradient_model = joblib.load(modell)
+with open('random_regression_model.pkl', 'rb') as model1:
+    rf_model = joblib.load(model1)
+with open('linear_regression_model.pkl', 'rb') as model2:
+    linear_model = joblib.load(model2)
+with open('svm_regression_model.pkl', 'rb') as model3:
+    svm_model = joblib.load(model3)
+with open('gradient_regression_model.pkl', 'rb') as model4:
+    gradient_model = joblib.load(model4)
 # Function to predict crop yield based on user input
+
+
+# y_pred1 = gb_model.predict(X_test1)
+
+
 AREA = ['Albania', 'Algeria', 'Angola', 'Argentina', 'Armenia',
        'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain',
        'Bangladesh', 'Belarus', 'Belgium', 'Botswana', 'Brazil',
@@ -42,7 +55,7 @@ AREA = ['Albania', 'Algeria', 'Angola', 'Argentina', 'Armenia',
 ITEM= ['Maize', 'Potatoes', 'Rice, paddy', 'Sorghum', 'Soybeans', 'Wheat',
        'Cassava', 'Sweet potatoes', 'Plantains and others', 'Yams']
 ##2
-def predict_yield_dynamic(area, item, year, avg_rainfall, pesticides, avg_temp, encoder_columns):
+def predict_yield_dynamic(area, item, year, avg_rainfall, pesticides, avg_temp, model_name, encoder_columns):
     # Create a DataFrame for the input
     input_data = {
         "Year": [year],
@@ -79,12 +92,33 @@ def predict_yield_dynamic(area, item, year, avg_rainfall, pesticides, avg_temp, 
     # Reindex to match the training data columns (excluding the target column 'hg/ha_yield')
     df_input = df_input.reindex(columns=encoder_columns, fill_value=0)
 
-    prediction = gradient_model.predict(df_input)
+    # Predict using the trained model
+    # 'Linear Regression','Random Forest Regression','Support Vector Regression','Gradient Boosting Regression'
+    if model_name == "Linear Regression":
+        prediction = linear_model.predict(df_input)
+    elif model_name == "Random Forest Regression":
+        prediction = rf_model.predict(df_input)
+    elif model_name == "Support Vector Regression":
+        prediction = svm_model.predict(df_input)
+    elif model_name == "Gradient Boosting Regression":
+        df_final = pd.read_csv("gradient_climate_data.csv")
+        x1 = df_final.drop(columns=['hg/ha_yield'])  # Features
+        y1 = df_final['hg/ha_yield']  # Target variable
+
+# Step 4: Split the data into training and testing sets (80% train, 20% test)
+        X_train1, X_test1, y_train1, y_test1 = train_test_split(x1, y1, test_size=0.2, random_state=42)
+
+        gb_model = GradientBoostingRegressor(n_estimators=100, random_state=42)
+        gb_model.fit(X_train1, y_train1)
+        prediction = gb_model.predict(df_input)
     return prediction[0]
 
 
 # Streamlit UI
 st.title('Crop Yield Prediction')
+
+# User input fields
+model_name = st.selectbox("Select Regression Model", ['Linear Regression','Random Forest Regression','Support Vector Regression','Gradient Boosting Regression'])
 area = st.selectbox('Select Area (Country):', AREA)
 item = st.selectbox('Select Crop:', ITEM)
 year = st.number_input('Enter Year:', min_value=1900, max_value=2050, value=2015)
@@ -96,6 +130,5 @@ avg_temp = st.number_input("Temprature (°C):", min_value=0.0, max_value=60.0, v
 if st.button('Predict Yield'):
     encoder_columns = ['Year', 'average_rain_fall_mm_per_year', 'pesticides_tonnes', 'avg_temp', 'Area_Albania', 'Area_Algeria', 'Area_Angola', 'Area_Argentina', 'Area_Armenia', 'Area_Australia', 'Area_Austria', 'Area_Azerbaijan', 'Area_Bahamas', 'Area_Bahrain', 'Area_Bangladesh', 'Area_Belarus', 'Area_Belgium', 'Area_Botswana', 'Area_Brazil', 'Area_Bulgaria', 'Area_Burkina Faso', 'Area_Burundi', 'Area_Cameroon', 'Area_Canada', 'Area_Central African Republic', 'Area_Chile', 'Area_Colombia', 'Area_Croatia', 'Area_Denmark', 'Area_Dominican Republic', 'Area_Ecuador', 'Area_Egypt', 'Area_El Salvador', 'Area_Eritrea', 'Area_Estonia', 'Area_Finland', 'Area_France', 'Area_Germany', 'Area_Ghana', 'Area_Greece', 'Area_Guatemala', 'Area_Guinea', 'Area_Guyana', 'Area_Haiti', 'Area_Honduras', 'Area_Hungary', 'Area_India', 'Area_Indonesia', 'Area_Iraq', 'Area_Ireland', 'Area_Italy', 'Area_Jamaica', 'Area_Japan', 'Area_Kazakhstan', 'Area_Kenya', 'Area_Latvia', 'Area_Lebanon', 'Area_Lesotho', 'Area_Libya', 'Area_Lithuania', 'Area_Madagascar', 'Area_Malawi', 'Area_Malaysia', 'Area_Mali', 'Area_Mauritania', 'Area_Mauritius', 'Area_Mexico', 'Area_Montenegro', 'Area_Morocco', 'Area_Mozambique', 'Area_Namibia', 'Area_Nepal', 'Area_Netherlands', 'Area_New Zealand', 'Area_Nicaragua', 'Area_Niger', 'Area_Norway', 'Area_Pakistan', 'Area_Papua New Guinea', 'Area_Peru', 'Area_Poland', 'Area_Portugal', 'Area_Qatar', 'Area_Romania', 'Area_Rwanda', 'Area_Saudi Arabia', 'Area_Senegal', 'Area_Slovenia', 'Area_South Africa', 'Area_Spain', 'Area_Sri Lanka', 'Area_Sudan', 'Area_Suriname', 'Area_Sweden', 'Area_Switzerland', 'Area_Tajikistan', 'Area_Thailand', 'Area_Tunisia', 'Area_Turkey', 'Area_Uganda', 'Area_Ukraine', 'Area_United Kingdom', 'Area_Uruguay', 'Area_Zambia', 'Area_Zimbabwe', 'Item_Cassava', 'Item_Maize', 'Item_Plantains and others', 'Item_Potatoes', 'Item_Rice, paddy', 'Item_Sorghum', 'Item_Soybeans', 'Item_Sweet potatoes', 'Item_Wheat', 'Item_Yams']
 
-    prediction = predict_yield_dynamic(area, item, year, rain_fall, pesticides, avg_temp, encoder_columns=encoder_columns)
+    prediction = predict_yield_dynamic(area, item, year, rain_fall, pesticides, avg_temp, model_name=model_name, encoder_columns=encoder_columns)
     st.write(f"Predicted Crop Yield (hg/ha): {prediction:.2f}")
-

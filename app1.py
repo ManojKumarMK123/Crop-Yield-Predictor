@@ -24,8 +24,6 @@ with open('linear_regression_model.pkl', 'rb') as model2:
     linear_model = joblib.load(model2)
 with open('svm_regression_model.pkl', 'rb') as model3:
     svm_model = joblib.load(model3)
-with open('gradient_regression_model.pkl', 'rb') as model4:
-    gradient_model = joblib.load(model4)
 # Function to predict crop yield based on user input
 
 
